@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سوق الخير Registration</title>
+    <!-- Tailwind CSS CDN for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a more stylized Arabic font -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://images.pexels.com/photos/1068523/pexels-photo-1068523.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); /* New background image: warm, soft */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            color: #424242;
+            overflow-x: hidden;
+        }
+
+        /* Dark, slightly blurred overlay for background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.65); /* Slightly darker overlay for better contrast */
+            z-index: -1;
+        }
+
+        /* Abstract animated shapes for "randomness" and beauty */
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(-20px) rotate(5deg); opacity: 0.9; }
+            100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+        }
+
+        @keyframes float-reverse {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(20px) rotate(-5deg); opacity: 0.8; }
+            100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+        }
+
+        .abstract-shape {
+            position: absolute;
+            z-index: -2;
+            background: linear-gradient(135deg, rgba(255, 160, 0, 0.4), rgba(255, 223, 100, 0.4));
+            border-radius: 50% 30% 60% 40% / 40% 60% 30% 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .abstract-shape:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .abstract-shape:nth-child(2) {
+            width: 100px;
+            height: 100px;
+            bottom: 15%;
+            right: 10%;
+            background: linear-gradient(45deg, rgba(255, 99, 71, 0.4), rgba(139, 195, 74, 0.4)); /* Soft Red to Light Green */
+            border-radius: 30% 50% 40% 70% / 70% 40% 50% 30%;
+            animation: float-reverse 18s infinite ease-in-out;
+            animation-delay: 2s;
+        }
+
+        .abstract-shape:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            top: 40%;
+            right: -5%;
+            background: linear-gradient(90deg, rgba(255, 204, 0, 0.3), rgba(255, 102, 0, 0.3));
+            border-radius: 60% 40% 50% 50% / 50% 50% 40% 60%;
+            animation: float 20s infinite ease-in-out;
+            animation-delay: 5s;
+        }
+
+        /* Main container for the whole content block (header, gallery, form) */
+        .content-block {
+            background-color: #fff9c4;
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+            max-width: 900px;
+            width: 100%;
+            margin: 40px auto;
+            border: 2px solid #ffccbc;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .header-section {
+            text-align: center;
+        }
+
+        /* Stylized Text Logo */
+        .text-logo {
+            font-family: 'Amiri', serif; /* Use Amiri for an elegant Arabic script */
+            font-size: 4rem; /* Large size for prominence */
+            font-weight: 700; /* Bold */
+            color: #1a531a; /* Darker green for the text logo */
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+            margin-bottom: 2rem; /* More space below logo */
+            display: block; /* Ensures it takes full width */
+            letter-spacing: 2px; /* Slightly spread letters for style */
+            line-height: 1.2;
+            transition: transform 0.3s ease;
+        }
+        .text-logo:hover {
+            transform: scale(1.02); /* Subtle hover effect */
+        }
+
+        .header-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #e65100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-description {
+            color: #795548;
+            margin-bottom: 2rem; /* Increased margin since gallery is removed */
+            line-height: 1.8;
+            font-size: 1.2rem;
+        }
+        /* .gallery styles removed */
+
+        /* Form specific styles */
+        .form-section {
+            padding-top: 2.5rem;
+            border-top: 1px dashed #ffab91;
+        }
+        .form-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: #e65100;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            color: #006400; /* Dark green for labels */
+            font-size: 1.05rem;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.85rem;
+            border: 2px solid #ffab91;
+            border-radius: 0.75rem;
+            background-color: #fffde7;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: #ff8a65;
+            box-shadow: 0 0 0 4px rgba(255, 138, 101, 0.4);
+        }
+        .submit-button {
+            background-color: #8bc34a; /* Green added here */
+            color: #ffffff;
+            font-weight: 700;
+            padding: 1rem 8rem;
+            border-radius: 1.25rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 7px 20px rgba(139, 195, 74, 0.5); /* Green shadow */
+        }
+        .submit-button:hover {
+            background-color: #689f38; /* Darker green on hover */
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 25px rgba(139, 195, 74, 0.6);
+        }
+        .submit-button:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(139, 195, 74, 0.4);
+        }
+        .error-message {
+            color: #e53935;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+            margin-bottom: 0.6rem;
+        }
+
+        /* Footer styles */
+        .footer-container {
+            margin-top: 40px;
+            padding: 20px 30px;
+            background-color: #ff8a65; /* Orange color for footer background */
+            border-radius: 1.5rem;
+            text-align: center;
+            font-size: 1rem;
+            color: #ffffff; /* White text for contrast on orange footer */
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Abstract animated shapes for visual flair -->
+    <div class="abstract-shape"></div>
+    <div class="abstract-shape"></div>
+    <div class="abstract-shape"></div>
+
+    <!-- Main content block for header and form -->
+    <div class="content-block">
+        <div class="header-section">
+            <!-- Stylized text logo for "سوق الخير" -->
+            <span class="text-logo">سوق الخير</span>
+            <h1 class="header-title">أهلاً بكم في سوق الخير!</h1>
+            <p class="header-description">
+                انضموا إلينا في هذا الحدث الخيري المميز الذي يجمع مجتمعنا لدعم المحتاجين.
+                هنا يمكنكم بيع وعرض منتجاتكم المتنوعة من ملابس، مأكولات، وأشغال يدوية.
+                كل مساهمة تحدث فرقاً كبيراً. سجلوا الآن لتكونوا جزءاً من العطاء!
+            </p>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-title">تسجيل المتطوعين</h2>
+            <form id="charityForm" class="space-y-6">
+                <div>
+                    <label for="name" class="form-label">الاسم الكامل</label>
+                    <input type="text" id="name" name="name" class="form-input" placeholder="أدخل اسمك بالكامل" required>
+                    <div id="nameError" class="error-message">الاسم مطلوب.</div>
+                </div>
+
+                <div>
+                    <label for="phone" class="form-label">رقم الهاتف</label>
+                    <input type="tel" id="phone" name="phone" class="form-input" placeholder="مثال: +971501234567" required>
+                    <div id="phoneError" class="error-message">رقم هاتف صحيح مطلوب.</div>
+                </div>
+
+                <div>
+                    <label for="email" class="form-label">البريد الإلكتروني</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="example@example.com" required>
+                    <div id="emailError" class="error-message">عنوان بريد إلكتروني صالح مطلوب.</div>
+                </div>
+
+                <div>
+                    <label for="item" class="form-label">ماذا ستبيع/تعرض؟</label>
+                    <select id="item" name="item" class="form-select" required>
+                        <option value="">اختر الفئة</option>
+                        <option value="clothes">ملابس</option>
+                        <option value="food">طعام ومأكولات</option>
+                        <option value="handmade">أشغال يدوية وحرف</option>
+                        <option value="other">أخرى</option>
+                    </select>
+                    <div id="itemError" class="error-message">يجب اختيار فئة.</div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button type="submit" class="submit-button">
+                        سجل الآن
+                    </button>
+                </div>
+            </form>
+            <div id="messageBox" class="mt-4 p-3 rounded-lg text-center text-sm hidden"></div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="footer-container">
+        <p>&copy; 2025 سوق الخير. كل الحقوق محفوظة.</p>
+        <p>للتواصل: info@soukalkhair.org</p>
+    </footer>
+
+    <script>
+        document.getElementById('charityForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = ''; // Clear previous messages
+            messageBox.className = 'mt-4 p-3 rounded-lg text-center text-sm hidden'; // Reset classes
+
+            // Client-side validation
+            let isValid = true;
+
+            const nameInput = document.getElementById('name');
+            const nameError = document.getElementById('nameError');
+            if (nameInput.value.trim() === '') {
+                nameError.style.display = 'block';
+                isValid = false;
+            } else {
+                nameError.style.display = 'none';
+            }
+
+            const phoneInput = document.getElementById('phone');
+            const phoneError = document.getElementById('phoneError');
+            // Simple regex for phone number (can be enhanced for specific formats)
+            const phoneRegex = /^\+?[0-9\s-()]{7,20}$/; // Allows +, numbers, spaces, hyphens, parentheses
+            if (!phoneRegex.test(phoneInput.value.trim())) {
+                phoneError.style.display = 'block';
+                isValid = false;
+            } else {
+                phoneError.style.display = 'none';
+            }
+
+            const emailInput = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+            // Simple regex for email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value.trim())) {
+                emailError.style.display = 'block';
+                isValid = false;
+            } else {
+                emailError.style.display = 'none';
+            }
+
+            const itemSelect = document.getElementById('item');
+            const itemError = document.getElementById('itemError');
+            if (itemSelect.value === '') {
+                itemError.style.display = 'block';
+                isValid = false;
+            } else {
+                itemError.style.display = 'none';
+            }
+
+            if (!isValid) {
+                messageBox.textContent = 'الرجاء ملء جميع الحقول المطلوبة بشكل صحيح.';
+                messageBox.classList.remove('hidden');
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+                return; // Stop if validation fails
+            }
+
+            // Collect form data
+            const formData = {
+                name: nameInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                email: emailInput.value.trim(),
+                item: itemSelect.value
+            };
+
+            console.log('Form data submitted:', formData);
+
+            // Simulate API call to the backend
+            try {
+                // Replace '/submit-form' with the actual endpoint of your Node.js server
+                const response = await fetch('http://localhost:3000/submit-form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    messageBox.textContent = result.message || 'تم التسجيل بنجاح! شكراً لمشاركتك.';
+                    messageBox.classList.remove('hidden');
+                    messageBox.classList.add('bg-green-100', 'text-green-700');
+                    this.reset(); // Clear the form
+                } else {
+                    messageBox.textContent = result.message || 'حدث خطأ أثناء التسجيل. الرجاء المحاولة مرة أخرى.';
+                    messageBox.classList.remove('hidden');
+                    messageBox.classList.add('bg-red-100', 'text-red-700');
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                messageBox.textContent = 'تعذر الاتصال بالخادم. الرجاء التأكد من تشغيل الخادم والمحاولة مرة أخرى.';
+                messageBox.classList.remove('hidden');
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+            }
+        });
+    </script>
+</body>
+</html>
