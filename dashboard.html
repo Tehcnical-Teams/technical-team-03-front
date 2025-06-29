@@ -105,6 +105,8 @@
             transition: background-color 0.2s ease, transform 0.1s ease;
             font-size: 0.85rem;
             font-weight: 500;
+            margin-left: 8px;
+            /* Add some space between save and delete */
         }
 
         .save-button:hover {
@@ -115,6 +117,29 @@
         .save-button:active {
             transform: translateY(0);
         }
+
+        .delete-button {
+            background-color: #f44336;
+            /* Red */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .delete-button:hover {
+            background-color: #da190b;
+            transform: translateY(-1px);
+        }
+
+        .delete-button:active {
+            transform: translateY(0);
+        }
+
 
         .message-box {
             margin-top: 15px;
@@ -191,7 +216,7 @@
                         <th>Email </th>
                         <th>Product</th>
                         <th>income (€)</th>
-                        <th></th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -261,7 +286,6 @@
 
             participants.forEach(participant => {
                 const row = tableBody.insertRow();
-                // Ensure participant.income is parsed as a float before calling toFixed
                 const displayIncome = parseFloat(participant.income).toFixed(2);
                 row.innerHTML = `
                     <td>${participant.id}</td>
@@ -271,8 +295,8 @@
                     <td>
                         <input type="number" step="0.01" value="${displayIncome}" class="income-input" data-id="${participant.id}">
                     </td>
-                    <td>
-                        <button class="save-button" data-id="${participant.id}">حفظ</button>
+                    <td class="flex items-center gap-2"> <button class="save-button" data-id="${participant.id}">حفظ</button>
+                        <button class="delete-button" data-id="${participant.id}">حذف</button>
                     </td>
                 `;
             });
@@ -280,6 +304,11 @@
             // Add event listeners for save buttons
             document.querySelectorAll('.save-button').forEach(button => {
                 button.addEventListener('click', handleSaveIncome);
+            });
+
+            // Add event listeners for delete buttons
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', handleDeleteParticipant);
             });
         }
 
@@ -333,6 +362,50 @@
                 event.target.textContent = 'حفظ';
                 // Always re-fetch to ensure data consistency and clear messages
                 await fetchParticipants();
+            }
+        }
+
+        // New function to handle participant deletion
+        async function handleDeleteParticipant(event) {
+            const participantId = event.target.dataset.id;
+            const participantRow = event.target.closest('tr'); // Get the entire row for visual feedback
+
+            // Confirmation dialog
+            if (!confirm(`هل أنت متأكد أنك تريد حذف المشارك ذو الرقم التعريفي ${participantId}؟`)) {
+                return; // User cancelled
+            }
+
+            // Disable button during deletion
+            event.target.disabled = true;
+            event.target.textContent = 'جاري الحذف...';
+            // Optionally, add a visual cue to the row being deleted
+            participantRow.style.opacity = '0.5';
+            participantRow.style.transition = 'opacity 0.3s ease';
+
+
+            try {
+                const response = await fetch(`${backendDomain}/participants/${participantId}`, {
+                    method: 'DELETE',
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showDashboardMessage(result.message || 'تم حذف المشارك بنجاح!', 'success');
+                    // Remove the row immediately from the UI after successful deletion
+                    participantRow.remove();
+                    // Re-fetch participants to update total income and ensure data consistency
+                    await fetchParticipants();
+                } else {
+                    throw new Error(result.message || 'فشل حذف المشارك.');
+                }
+            } catch (error) {
+                console.error('Error deleting participant:', error);
+                showDashboardMessage(`خطأ في الحذف: ${error.message}`, 'error');
+                // Re-enable button and reset text if deletion failed
+                event.target.disabled = false;
+                event.target.textContent = 'حذف';
+                participantRow.style.opacity = '1'; // Restore opacity
             }
         }
 
