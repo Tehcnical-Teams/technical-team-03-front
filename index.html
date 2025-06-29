@@ -415,9 +415,7 @@
 
             // Determine backend URL based on environment (development vs. production)
             // IMPORTANT: Replace the production URL with your actual Render backend URL
-            const backendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? 'http://localhost:3000'
-                : 'https://technical-team-03-back.onrender.com'; // **Replace with your Render backend URL**
+            const backendUrl = "https://technical-team-03-back.onrender.com"; // **Replace with your Render backend URL**
 
             try {
                 // The POST endpoint on your backend is '/submit-form'
