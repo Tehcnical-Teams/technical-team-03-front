@@ -254,6 +254,14 @@
             box-shadow: 0 5px 15px rgba(139, 195, 74, 0.4);
         }
 
+        .submit-button:disabled {
+            background-color: #cccccc;
+            /* Greyed out when disabled */
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
         .error-message {
             color: #e53935;
             font-size: 0.9rem;
@@ -336,7 +344,7 @@
                 </div>
 
                 <div class="flex justify-center">
-                    <button type="submit" class="submit-button">
+                    <button type="submit" id="submitButton" class="submit-button">
                         سجل الآن
                     </button>
                 </div>
@@ -360,6 +368,8 @@
             const messageBox = document.getElementById('messageBox');
             messageBox.textContent = ''; // Clear previous messages
             messageBox.className = 'mt-4 p-3 rounded-lg text-center text-sm hidden'; // Reset classes
+
+            const submitButton = document.getElementById('submitButton'); // Get the submit button
 
             // Client-side validation
             let isValid = true;
@@ -403,6 +413,9 @@
                 return; // Stop if validation fails
             }
 
+            // Disable the button before making the API call
+            submitButton.disabled = true;
+
             // Collect form data
             const formData = {
                 name: nameInput.value.trim(),
@@ -444,6 +457,9 @@
                 messageBox.textContent = 'تعذر الاتصال بالخادم. الرجاء التأكد من تشغيل الخادم والمحاولة مرة أخرى.';
                 messageBox.classList.remove('hidden');
                 messageBox.classList.add('bg-red-100', 'text-red-700');
+            } finally {
+                // Re-enable the button after the fetch operation completes (success or error)
+                submitButton.disabled = false;
             }
         });
     </script>
