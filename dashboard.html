@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سوق الخير - لوحة تحكم المشاركين</title>
-    <!-- Tailwind CSS CDN for easy styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -159,6 +158,20 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Style for the total income row */
+        #totalIncomeRow {
+            background-color: #e0f7fa;
+            /* Light cyan for distinction */
+            font-weight: 700;
+            color: #00796b;
+            /* Dark teal text */
+        }
+
+        #totalIncomeRow td {
+            padding: 15px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 
@@ -182,7 +195,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Participants data will be loaded here -->
+                    <tr id="totalIncomeRow">
+                        <td>Total Income:</td>
+                        <td colspan="3"></td>
+                        <td id="totalIncomeValue">0.00 €</td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -193,6 +211,7 @@
         const tableBody = document.querySelector('#participantsTable tbody');
         const dashboardMessageBox = document.getElementById('dashboardMessageBox');
         const loadingSpinner = document.getElementById('loadingSpinner');
+        const totalIncomeValue = document.getElementById('totalIncomeValue');
 
         function showDashboardMessage(message, type) {
             dashboardMessageBox.textContent = message;
@@ -218,6 +237,7 @@
                 }
                 const participants = await response.json();
                 renderParticipantsTable(participants);
+                calculateAndDisplayTotalIncome(participants); // Calculate total after rendering
                 hideLoadingSpinner();
             } catch (error) {
                 console.error('Error fetching participants:', error);
@@ -227,9 +247,15 @@
         }
 
         function renderParticipantsTable(participants) {
-            tableBody.innerHTML = ''; // Clear existing rows
+            // Clear existing rows, but keep the total income row
+            const totalRow = document.getElementById('totalIncomeRow');
+            tableBody.innerHTML = '';
+            tableBody.appendChild(totalRow); // Re-append the total row at the top
+
             if (participants.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">لا يوجد مشاركون مسجلون بعد.</td></tr>';
+                const noParticipantsRow = document.createElement('tr');
+                noParticipantsRow.innerHTML = '<td colspan="6" class="text-center py-4">لا يوجد مشاركون مسجلون بعد.</td>';
+                tableBody.appendChild(noParticipantsRow);
                 return;
             }
 
@@ -256,6 +282,14 @@
                 button.addEventListener('click', handleSaveIncome);
             });
         }
+
+        function calculateAndDisplayTotalIncome(participants) {
+            const total = participants.reduce((sum, participant) => {
+                return sum + (parseFloat(participant.income) || 0);
+            }, 0);
+            totalIncomeValue.textContent = `${total.toFixed(2)} €`;
+        }
+
 
         async function handleSaveIncome(event) {
             const participantId = event.target.dataset.id;
