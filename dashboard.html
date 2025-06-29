@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سوق الخير - لوحة تحكم المشاركين</title>
+    <!-- Tailwind CSS CDN for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f8ff;
+            /* AliceBlue - light pastel blue for a fresh dashboard look */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .dashboard-container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-title {
+            color: #2e8b57;
+            /* SeaGreen - a nice green */
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            /* Allows horizontal scrolling for small screens */
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #c8e6c9;
+            /* Light green border */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+            /* Prevents text wrapping in cells */
+        }
+
+        th {
+            background-color: #e8f5e9;
+            /* Light green header */
+            color: #388e3c;
+            /* Darker green text */
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fdf9;
+            /* Slightly different background for even rows */
+        }
+
+        tr:hover {
+            background-color: #e0f2f1;
+            /* Light teal on hover */
+        }
+
+        .income-input {
+            width: 100px;
+            /* Fixed width for income input */
+            padding: 8px;
+            border: 1px solid #b0e0e6;
+            border-radius: 0.5rem;
+            background-color: #fffacd;
+            text-align: right;
+            /* Align numbers to the right */
+        }
+
+        .save-button {
+            background-color: #4CAF50;
+            /* Green */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .save-button:hover {
+            background-color: #43a047;
+            transform: translateY(-1px);
+        }
+
+        .save-button:active {
+            transform: translateY(0);
+        }
+
+        .message-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+            /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <h1 class="dashboard-title">لوحة تحكم المشاركين في سوق الخير</h1>
+
+        <div id="loadingSpinner" class="loading-spinner"></div>
+        <div id="dashboardMessageBox" class="message-box"></div>
+
+        <div class="table-container">
+            <table id="participantsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email </th>
+                        <th>Product</th>
+                        <th>income (€)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Participants data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const backendDomain = 'https://technical-team-03-back.onrender.com';
+        const tableBody = document.querySelector('#participantsTable tbody');
+        const dashboardMessageBox = document.getElementById('dashboardMessageBox');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        function showDashboardMessage(message, type) {
+            dashboardMessageBox.textContent = message;
+            dashboardMessageBox.className = `message-box ${type}`;
+            dashboardMessageBox.style.display = 'block';
+        }
+
+        function showLoadingSpinner() {
+            loadingSpinner.style.display = 'block';
+            dashboardMessageBox.style.display = 'none'; // Hide messages while loading
+        }
+
+        function hideLoadingSpinner() {
+            loadingSpinner.style.display = 'none';
+        }
+
+        async function fetchParticipants() {
+            showLoadingSpinner();
+            try {
+                const response = await fetch(`${backendDomain}/participants`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const participants = await response.json();
+                renderParticipantsTable(participants);
+                hideLoadingSpinner();
+            } catch (error) {
+                console.error('Error fetching participants:', error);
+                showDashboardMessage('فشل تحميل بيانات المشاركين. يرجى التأكد من تشغيل الخادم.', 'error');
+                hideLoadingSpinner();
+            }
+        }
+
+        function renderParticipantsTable(participants) {
+            tableBody.innerHTML = ''; // Clear existing rows
+            if (participants.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4">لا يوجد مشاركون مسجلون بعد.</td></tr>';
+                return;
+            }
+
+            participants.forEach(participant => {
+                const row = tableBody.insertRow();
+                // Ensure participant.income is parsed as a float before calling toFixed
+                const displayIncome = parseFloat(participant.income).toFixed(2);
+                row.innerHTML = `
+                    <td>${participant.id}</td>
+                    <td>${participant.name}</td>
+                    <td>${participant.email}</td>
+                    <td>${mapItemToArabic(participant.item)}</td>
+                    <td>
+                        <input type="number" step="0.01" value="${displayIncome}" class="income-input" data-id="${participant.id}">
+                    </td>
+                    <td>
+                        <button class="save-button" data-id="${participant.id}">حفظ</button>
+                    </td>
+                `;
+            });
+
+            // Add event listeners for save buttons
+            document.querySelectorAll('.save-button').forEach(button => {
+                button.addEventListener('click', handleSaveIncome);
+            });
+        }
+
+        async function handleSaveIncome(event) {
+            const participantId = event.target.dataset.id;
+            const incomeInput = document.querySelector(`.income-input[data-id="${participantId}"]`);
+            const newIncome = parseFloat(incomeInput.value);
+
+            if (isNaN(newIncome)) {
+                showDashboardMessage('الرجاء إدخال قيمة دخل صحيحة.', 'error');
+                return;
+            }
+
+            // Disable button and input during save
+            event.target.disabled = true;
+            incomeInput.disabled = true;
+            event.target.textContent = 'جاري الحفظ...';
+
+            try {
+                const response = await fetch(`${backendDomain}/participants/${participantId}/income`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ income: newIncome })
+                });
+
+                const result = await response.json(); // Always parse JSON to get the message
+
+                if (response.ok) { // Status code is 2xx
+                    showDashboardMessage(result.message || 'تم حفظ الدخل بنجاح!', 'success');
+                } else { // Status code is non-2xx (e.g., 400, 404, 500)
+                    // Display the error message received from the backend
+                    throw new Error(result.message || 'فشل تحديث الدخل.');
+                }
+            } catch (error) {
+                console.error('Error saving income:', error);
+                showDashboardMessage(`خطأ في الحفظ: ${error.message}`, 'error');
+            } finally {
+                // Re-enable and reset button text
+                event.target.disabled = false;
+                incomeInput.disabled = false;
+                event.target.textContent = 'حفظ';
+                // Always re-fetch to ensure data consistency and clear messages
+                await fetchParticipants();
+            }
+        }
+
+        function mapItemToArabic(item) {
+            switch (item) {
+                case 'clothes': return 'ملابس';
+                case 'food': return 'طعام ومأكولات';
+                case 'handmade': return 'أشغال يدوية وحرف';
+                case 'other': return 'أخرى';
+                default: return item;
+            }
+        }
+
+        // Fetch participants when the page loads
+        document.addEventListener('DOMContentLoaded', fetchParticipants);
+    </script>
+</body>
+
+</html>
